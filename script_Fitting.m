@@ -2,12 +2,12 @@
 % fname_F = 'F_VSFFunction.mat';
 % fname_b = 'B0_midResults.mat';
 
-used_te = 12;
+used_te = 24;
 
 % s = load(fname_img);
 % img = s.imgAllEcho_comb;
-% img = abs(iField);
-img = abs(iField(:,:,:,1:2:end));
+img = abs(iField);
+%img = abs(iField(:,:,:,1:2:end));
 
 
 % s = load(fname_F);
@@ -34,8 +34,8 @@ xpt = size(mask,1);
 ypt = size(mask,2);
 zpt = size(mask,3);
 
-%te = TE*1000; % In unit of ms
-te = TE(1:2:end)*1000;
+te = TE*1000; % In unit of ms
+%te = TE(1:2:end)*1000;
 
 if used_te > length(te)
     error('te used for fitting cannot larger than total te number.');
@@ -66,13 +66,15 @@ fitted_param = zeros(xpt, ypt, length(tot_slice), 7);
 %     'Display', 'off', 'FunctionTolerance', 1e-5, 'StepTolerance', 1e-5);
 
 opts = optimoptions(@lsqnonlin, 'Algorithm', 'trust-region-reflective',...
-    'Display', 'off', 'FunctionTolerance', 1e-5, 'StepTolerance', 1e-5);
+    'Display', 'off', 'FunctionTolerance', 1e-5, 'StepTolerance', 1e-5, 'MaxIterations',1000, 'MaxFunctionEvaluations', 1000);
 
 %% Start Fitting
 disp('Started Fitting.');
 tic;
 parpool(8);
 % s = tot_slice(40);
+
+f = waitbar(0, 'Starting');
 for s = 1 : zpt
     parfor x = 1 : xpt
         for y = 1 : ypt
@@ -88,27 +90,27 @@ for s = 1 : zpt
             decay = double(decay(1:used_te));
             %decay = abs(decay).*exp(1j*unwrap(angle(decay)));
                                   
-            % 3-pool model
+            % 3-pool magnitude model
             p0 = [0.1*decay(1); 0.6*decay(1); 0.3*decay(1); ...
                 10; 64; 48];
             
             p_lower = [0; 0; 0; ...
                 3; 25; 25];
                 
-            p_upper = [1*decay(1); 1*decay(1); 1*decay(1); ...
+            p_upper = [0.5*decay(1); 1*decay(1); 1*decay(1); ...
                 24; 2000; 2000];
                         
             
             
-%             % 2-pool model
+%             % 2-pool magnitude model
 %             p0 = [0.3*abs(decay(1)); 0.7*abs(decay(1)); 0; ...
 %                 10; 70; 0];
 %             
 %             p_lower = [0; 0; 0; ...
-%                 3; 25; 0];
+%                 1; 40; 0];
 %                 
 %             p_upper = [1*abs(decay(1)); 1*abs(decay(1)); 0; ...
-%                 24; 2000; 0];
+%                 40; 2000; 0];
             
             
             
@@ -119,7 +121,11 @@ for s = 1 : zpt
             
         end
     end
+    
+    waitbar(s/zpt, f, sprintf('Progress: %d %%', floor(s/zpt*100)));
+    %pause(0.1);
 end
+close(f);
 delete(gcp('nocreate'));
 
 toc;
