@@ -2,12 +2,12 @@
 % fname_F = 'F_VSFFunction.mat';
 % fname_b = 'B0_midResults.mat';
 
-used_te = 24;
+used_te = 12;
 
 % s = load(fname_img);
 % img = s.imgAllEcho_comb;
-img = abs(iField);
-%img = abs(iField(:,:,:,1:2:end));
+% img = abs(iField);
+img = abs(iField(:,:,:,1:2:end));
 
 
 % s = load(fname_F);
@@ -34,8 +34,8 @@ xpt = size(mask,1);
 ypt = size(mask,2);
 zpt = size(mask,3);
 
-te = TE*1000; % In unit of ms
-%te = TE(1:2:end)*1000;
+%te = TE*1000; % In unit of ms
+te = TE(1:2:end)*1000;
 
 if used_te > length(te)
     error('te used for fitting cannot larger than total te number.');
