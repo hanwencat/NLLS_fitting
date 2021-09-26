@@ -43,6 +43,7 @@
 %%%%%%%%%%%%%%%%%%%%%% NECESSARY FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Set paths
+addpath(genpath('/export01/data/Hanwen/matlab_tools'));
 path_to_repo = '/export01/data/Hanwen/QSM/QSM_scripts'; % full path to QSM analysis pipeline repo
 path_to_raw = '/export01/data/Hanwen/data/mgre_data/WT_F_21/14/'; % full path to raw data directory
 % path_to_save = '/export01/data/Hanwen/QSM/QSM_analysis/WT_F_21'; % full path to the folder for saving the analysis results
@@ -65,6 +66,19 @@ imshow(squeeze(angle(iField(:,50,:))),[-pi,pi]);
 title('Raw phase after bipolar correction');
 colorbar;
 drawnow;
+
+
+% Gibbs ring removal and denoise via mppca
+iField_mag = permute(abs(iField),[1,2,3,4]); % default: no permute applied [1,2,3,4] 
+iField_mag_unring = iField_mag;
+parfor echo = 1:NumEcho
+    iField_mag_unring(:,:,:,echo) = unring(iField_mag(:,:,:,echo));
+end
+iField_mag_unring = permute(iField_mag_unring,[1,2,3,4]); % permute back to match with iField
+iField_mag_unring_denoise = denoise(iField_mag_unring,[5,5,5]); % denoise via mppca
+iField = iField_mag_unring_denoise.*exp(1j*angle(iField)); % inplace corrected iField
+clearvars iField_mag iField_mag_unring iField_mag_unring_denoise
+
 
 % Compute magnitude image combining all echoes
 iMag = sqrt(sum(abs(iField).^2, 4));
