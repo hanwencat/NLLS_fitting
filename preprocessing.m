@@ -148,11 +148,11 @@ RDF = lfs_PDF; % choose the best background removal, default is PDF.
 % Monoexponential fitting for R2* map
 R2s = arlo(TE, abs(iField));
 
-% % Dipole inversion for QSM map 
-% [QSM, QSM_res] = tvdi(RDF, double(Mask), voxel_size, 5e-4, iMag, B0_dir);
-% 
-% % plot the results
-% figure, plot_QSM_results
+% Dipole inversion for QSM map 
+[QSM, QSM_res] = tvdi(RDF, double(Mask), voxel_size, 5e-4, iMag, B0_dir);
+
+% plot the results
+figure, plot_QSM_results
 % 
 % % Save analysis results
 % save QSM_results.mat QSM R2s RDF tfs iFreq_raw iMag N_std Mask QSM_res 
