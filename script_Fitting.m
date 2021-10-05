@@ -2,12 +2,12 @@
 % fname_F = 'F_VSFFunction.mat';
 % fname_b = 'B0_midResults.mat';
 
-used_te = 24;
+used_te = 12;
 
 % s = load(fname_img);
 % img = s.imgAllEcho_comb;
-img = abs(iField);
-%img = abs(iField(:,:,:,1:2:end));
+%img = abs(iField);
+img = abs(iField(:,:,:,1:2:end));
 
 
 % s = load(fname_F);
@@ -34,8 +34,8 @@ xpt = size(mask,1);
 ypt = size(mask,2);
 zpt = size(mask,3);
 
-te = TE*1000; % In unit of ms
-%te = TE(1:2:end)*1000;
+%te = TE*1000; % In unit of ms
+te = TE(1:2:end)*1000;
 
 if used_te > length(te)
     error('te used for fitting cannot larger than total te number.');
@@ -97,7 +97,7 @@ for s = 1 : zpt
             p_lower = [0; 0; 0; ...
                 3; 25; 25];
                 
-            p_upper = [1*decay(1); 1*decay(1); 1*decay(1); ...
+            p_upper = [5*decay(1); 5*decay(1); 5*decay(1); ...
                 24; 2000; 2000];
                         
             
@@ -132,8 +132,8 @@ toc;
 
 
 mwf_map = fitted_param(:,:,:,1)./(fitted_param(:,:,:,1)+fitted_param(:,:,:,2)+fitted_param(:,:,:,3));
-figure, subplot(131);imshow(squeeze(mwf_map(70,:,:)),[0,0.5],'border','tight'); colorbar;
-subplot(132);imshow(squeeze(mwf_map(:,50,:)),[0,0.5],'border','tight'); colorbar;
-subplot(133);imshow(squeeze(mwf_map(:,:,60)),[0,0.5],'border','tight'); colorbar;
-title_txt = ['number of echoes: ', num2str(used_te), ', fitting parameter (upper bound): ', num2str(2000)];
-suptitle(title_txt);
+figure, subplot(131);imshow(squeeze(mwf_map(70,:,:)),[0,0.4],'border','tight'); colorbar;
+subplot(132);imshow(squeeze(mwf_map(:,50,:)),[0,0.4],'border','tight'); colorbar;
+subplot(133);imshow(squeeze(mwf_map(:,:,60)),[0,0.4],'border','tight'); colorbar;
+% title_txt = ['number of echoes: ', num2str(used_te), ', fitting parameter (upper bound): ', num2str(2000)];
+% suptitle(title_txt);

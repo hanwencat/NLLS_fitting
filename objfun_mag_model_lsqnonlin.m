@@ -15,13 +15,14 @@ temp = p(1) * exp(-t/p(4)) + p(2) * exp(-t/p(5)) + p(3) * exp(-t/p(6));
 % alpha = 22/pi;
 % TR = 100;
 % T1_myelin = 500;
-% T1_ie = 1200;
-% T1_ax = 1200;
+% T1_ie = 1000;
+% T1_ax = 1000;
 % 
 % 
 % temp = p(1) * exp(-t/p(4)) * sin(alpha)*(1-exp(-TR/T1_myelin))/(1-cos(alpha)*exp(-TR/T1_myelin)) ... 
 % + p(2) * exp(-t/p(5)) * sin(alpha)*(1-exp(-TR/T1_ie))/(1-cos(alpha)*exp(-TR/T1_ie)) ...
 % + p(3) * exp(-t/p(6)) * sin(alpha)*(1-exp(-TR/T1_ax))/(1-cos(alpha)*exp(-TR/T1_ax));
+
 yout = temp - s;
 
 
