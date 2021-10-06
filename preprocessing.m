@@ -68,16 +68,16 @@ colorbar;
 drawnow;
 
 
-% Gibbs ring removal and denoise via mppca
-iField_mag = permute(abs(iField),[1,2,3,4]); % default: no permute applied [1,2,3,4] 
-iField_mag_unring = iField_mag;
-parfor echo = 1:NumEcho
-    iField_mag_unring(:,:,:,echo) = unring(iField_mag(:,:,:,echo));
-end
-iField_mag_unring = permute(iField_mag_unring,[1,2,3,4]); % permute back to match with iField
-iField_mag_unring_denoise = denoise(iField_mag_unring,[5,5,5]); % denoise via mppca
-iField = iField_mag_unring_denoise.*exp(1j*angle(iField)); % inplace corrected iField
-clearvars iField_mag iField_mag_unring iField_mag_unring_denoise
+% % Gibbs ring removal and denoise via mppca
+% iField_mag = permute(abs(iField),[1,2,3,4]); % default: no permute applied [1,2,3,4] 
+% iField_mag_unring = iField_mag;
+% parfor echo = 1:NumEcho
+%     iField_mag_unring(:,:,:,echo) = unring(iField_mag(:,:,:,echo));
+% end
+% iField_mag_unring = permute(iField_mag_unring,[1,2,3,4]); % permute back to match with iField
+% iField_mag_unring_denoise = denoise(iField_mag_unring,[5,5,5]); % denoise via mppca
+% iField = iField_mag_unring_denoise.*exp(1j*angle(iField)); % inplace corrected iField
+% clearvars iField_mag iField_mag_unring iField_mag_unring_denoise
 
 
 % Compute magnitude image combining all echoes
@@ -149,10 +149,10 @@ RDF = lfs_PDF; % choose the best background removal, default is PDF.
 R2s = arlo(TE, abs(iField));
 
 % Dipole inversion for QSM map 
-[QSM, QSM_res] = tvdi(RDF, double(Mask), voxel_size, 5e-4, iMag, B0_dir);
+%[QSM, QSM_res] = tvdi(RDF, double(Mask), voxel_size, 5e-4, iMag, B0_dir);
 
 % plot the results
-figure, plot_QSM_results
+%figure, plot_QSM_results
 % 
 % % Save analysis results
 % save QSM_results.mat QSM R2s RDF tfs iFreq_raw iMag N_std Mask QSM_res 

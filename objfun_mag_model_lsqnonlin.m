@@ -5,20 +5,18 @@ function yout = objfun_mag_model_lsqnonlin(p, t, s)
 % p: parameter array of this model
 % t: TE, in unit of ms
 % s: The magnitude of the measured decay signal
-% Note that p4-6 are in unit of ms as TE
+
 
 
 % No T1 compensation
 temp = p(1) * exp(-t/p(4)) + p(2) * exp(-t/p(5)) + p(3) * exp(-t/p(6));
 
 % With T1 compensation
-% alpha = 22/pi;
-% TR = 100;
-% T1_myelin = 500;
-% T1_ie = 1000;
-% T1_ax = 1000;
-% 
-% 
+% alpha = (22/180)*pi;
+% TR = 0.1;
+% T1_myelin = 0.3;
+% T1_ie = 0.8;
+% T1_ax = 1;
 % temp = p(1) * exp(-t/p(4)) * sin(alpha)*(1-exp(-TR/T1_myelin))/(1-cos(alpha)*exp(-TR/T1_myelin)) ... 
 % + p(2) * exp(-t/p(5)) * sin(alpha)*(1-exp(-TR/T1_ie))/(1-cos(alpha)*exp(-TR/T1_ie)) ...
 % + p(3) * exp(-t/p(6)) * sin(alpha)*(1-exp(-TR/T1_ax))/(1-cos(alpha)*exp(-TR/T1_ax));

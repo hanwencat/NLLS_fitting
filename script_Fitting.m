@@ -34,7 +34,7 @@ xpt = size(mask,1);
 ypt = size(mask,2);
 zpt = size(mask,3);
 
-%te = TE*1000; % In unit of ms
+%te = TE; % In unit of s
 te = TE(1:2:end)*1000;
 
 if used_te > length(te)
@@ -91,13 +91,13 @@ for s = 1 : zpt
             %decay = abs(decay).*exp(1j*unwrap(angle(decay)));
                                   
             % 3-pool magnitude model
-            p0 = [0.1*decay(1); 0.6*decay(1); 0.3*decay(1); ...
+            p0 = [0.2*decay(1); 0.5*decay(1); 0.3*decay(1); ...
                 10; 64; 48];
             
             p_lower = [0; 0; 0; ...
                 3; 25; 25];
                 
-            p_upper = [5*decay(1); 5*decay(1); 5*decay(1); ...
+            p_upper = [0.5*decay(1); 1*decay(1); 1*decay(1); ...
                 24; 2000; 2000];
                         
             
