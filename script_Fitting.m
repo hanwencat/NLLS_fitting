@@ -35,7 +35,7 @@ ypt = size(mask,2);
 zpt = size(mask,3);
 
 %te = TE; % In unit of s
-te = TE(1:2:end)*1000;
+te = TE(1:2:end);
 
 if used_te > length(te)
     error('te used for fitting cannot larger than total te number.');

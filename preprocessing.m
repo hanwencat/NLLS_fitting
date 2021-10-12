@@ -67,6 +67,9 @@ title('Raw phase after bipolar correction');
 colorbar;
 drawnow;
 
+% denoise the data via mppca
+iField_mag_denoise = denoise(abs(iField),[5,5,5]);
+iField = iField_mag_denoise.*exp(1j*angle(iField));
 
 % % Gibbs ring removal and denoise via mppca
 % iField_mag = permute(abs(iField),[1,2,3,4]); % default: no permute applied [1,2,3,4] 
