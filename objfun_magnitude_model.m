@@ -1,4 +1,4 @@
-function yout = objfun_mag_model_lsqnonlin(p, t, s)
+function yout = objfun_magnitude_model(p, t, s)
 % objective function for NLLS fitting
 % p: parameter array of the 3 pool magnitude model
 % p(1-3): amplitudes of the 3 pools

@@ -46,7 +46,7 @@ phantom_make(snr_range, mwf_range, t2s, x_dim, y_dim, fs_mu, fs_sigma, echo_time
 %         decay = decay / max(decay);
 %         
 %         % create object function and fit
-%         objfcn = @(p)objfun_mag_model_lsqnonlin(p, echo_time, decay);
+%         objfcn = @(p)objfun_magnitude_model(p, echo_time, decay);
 %         [p_est, resnorm] = lsqnonlin(objfcn, p0, p_lower, p_upper, opts);
 %         fitted_param(x,y,:) = reshape([p_est; resnorm], [1,1,7]);   
 %     end
@@ -86,7 +86,7 @@ parfor x = 1:x_dim
         %decay = decay / abs(decay(1));
         
         % create object function and fit
-        objfcn = @(p)objfun_complex_model_lsqnonlin(p, echo_time, decay);
+        objfcn = @(p)objfun_complex_model(p, echo_time, decay);
         [p_est, resnorm] = lsqnonlin(objfcn, p0, p_lower, p_upper, opts);
         fitted_param(x,y,:) = reshape([p_est; resnorm], [1,1,11]); 
     end

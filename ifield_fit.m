@@ -66,7 +66,7 @@ for x = 1:x_dim
                 fs(x,y,z)+75; fs(x,y,z)+25; fs(x,y,z)+25; pi]; % upper bound
 
             % create object function and fit
-            objfcn = @(p)objfun_complex_model_lsqnonlin(p, echo_time, decay);
+            objfcn = @(p)objfun_complex_model(p, echo_time, decay);
             [p_est, resnorm] = lsqnonlin(objfcn, p0, p_lower, p_upper, opts);
             fitted_param(x,y,z,:) = reshape([p_est; resnorm], [1,1,11]);
         end
