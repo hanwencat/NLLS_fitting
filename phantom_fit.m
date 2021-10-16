@@ -1,12 +1,12 @@
 %% Generate the phantom
-% parameters for making the phantom
+% parameters for making a 2D phantom
 snr_range = [50, 500];
 mwf_range = [0, 0.5];
 t2s = [0.01,0.064,0.048]; % unit: seconds
 x_dim = 100;
 y_dim = 100; 
 fs_mu = [20,-7,0];
-% fs_sigma = [2,2,1]; 
+%fs_sigma = [2,2,1]; 
 %fs_mu = [0,0,0];
 fs_sigma = [0,0,0]; 
 %echo_time = TE; 

@@ -1,5 +1,20 @@
 function [signal, mwf, noise, fs_my, fs_ax, fs_ex, phi0] = phantom_make(snr_range, mwf_range, t2s, x_dim, y_dim, fs_mu, fs_sigma, echo_time)
-    
+    % Produce a 2D computational phantom (x axis: different mwf values, y axis: different snr levels)
+    %
+    % Input:
+    % snr_range: range of SNR levels [snr_min, snr_max]
+    % mwf_range: range of MWF values [mwf_min, mwf_max]
+    % t2s: array of 3-pool t2stars values [t2_my, t2_ax, t2_ex]
+    % x_dim, y_dim: the phantom dimension
+    % fs_mu, fs_sigma: frequency shift mean and varaiance
+    % echo_time: array contains echo times
+    %
+    % Output:
+    % signal: complex multi-echo signals
+    % mwf: mwf map
+    % noise: generated noise map
+    % fs_my, fs_ax, fs_ex: frequency shift maps for the 3 pools
+    % phi0: initial phase map
 
 
     % create placeholders

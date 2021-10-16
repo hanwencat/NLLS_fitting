@@ -1,13 +1,30 @@
-%% NLLS complex fitting for experimental data
+%% NLLS complex fitting for mGRE data
+% Created by Hanwen liu on 2021-10-15
+
+%%%%%%%%%%%%%%%%%%%%%% NAMING CONVENTION %%%%%%%%%%%%%%%%%%%%%%%%%
+% iField - multiecho complex MRI dataset (the 4th dimension is the echo)
+% iMag - magnitude image, square root of squares of all echoes
+% Mask - binary mask denoting the region of interest
+% tfs - total field map (rad/ms), generated from preprocessing
+% fs - frequency shift map (Hz)
+% R2s - R2* map, generated from preprocessing 
+
+% TE - echo time, unit in sec
+% B0_dir - unit vector representing direction of B0 field 
+% matrix_size - sizes ([x y z]) of the imaging volume
+% voxel_size - size of the voxel unit in mm
+
+% delta_TE - echo spacing, unit in sec
+% CF - center frequency, unit in Hz
+% B0_strength - magnetic field strength, unit in Tesla
+%%%%%%%%%%%%%%%%%%%%%% NAMING CONVENTION %%%%%%%%%%%%%%%%%%%%%%%%%
 
 % load data, echo time, and frequency shift map
 data = iField.*Mask;
-% mask = Mask(69:70,:,:);
-% data = data(69:70,:,:,:);
 echo_time = TE;
-% data = iField(:,:,:,1:2:end).*Mask;
-% echo_time = TE(1:2:end);
-fs = -tfs*1000/(2*pi); % unit in Hz
+% data = iField(:,:,:,1:2:end).*Mask; % fit with odd echoes only
+% echo_time = TE(1:2:end); % fit with odd echoes only
+fs = -tfs(:,:,:)*1000/(2*pi); % unit in Hz
 
 % get dimemsion
 data_dim = size(data);
@@ -27,21 +44,21 @@ opts = optimoptions(@lsqnonlin, 'Algorithm', 'trust-region-reflective',...
     'MaxIterations', 1000, 'MaxFunctionEvaluations', 1000);
 
 % start fitting for the experimental data
-f = waitbar(0, 'Starting');
+f = waitbar(0, 'Fitting in progress');
 tic
 %signal = phantom_denoised .* exp(1j*angle(phantom.signal));
 for x = 1:x_dim
     parfor y = 1:y_dim
         for z = 1:z_dim
-            if Mask(x,y,z) == 0
+            if mask(x,y,z) == 0
                 continue;
             end
             decay = squeeze(data(x,y,z,:)); % squeeze the dimension
             %decay = squeeze(phantom_denoised(x,y,:));
             decay = decay / abs(decay(1));
             
-            % create fitting parameters
-            p0 = [0.2; 0.5; 0.3; 0.01; 0.064; 0.048; 
+            % create fitting parameters adaptively for each voxel
+            p0 = [0.2; 0.5; 0.3; 0.01; R2s(x,y,z)+10; R2s(x,y,z)-10; 
                 fs(x,y,z); fs(x,y,z); fs(x,y,z); 0]; % intialization value (unit: seconds)
             p_lower = [0; 0; 0; 0.003; 0.025; 0.025; 
                 fs(x,y,z)-75; fs(x,y,z)-25; fs(x,y,z)-25; -pi]; % lower bound
