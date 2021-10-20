@@ -1,5 +1,5 @@
 # NLLS fitting
-Nonlinear least squares fitting for myelin water imaging data acquired by mGRE sequence (3-pool complex model) 
+Nonlinear least squares fitting for myelin water imaging data acquired by mGRE sequence (3-pool model) 
 
 ## How to use
 - Input data: multi-echo gradient echo (mGRE) data.
