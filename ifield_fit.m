@@ -36,7 +36,8 @@ z_dim = data_dim(3);
 % parameter order: 3 amplitudes, 3 t2stars, 3 frequency shifts, 1 initial phase factor
 
 % placeholder for the fitted parameters (10 parameters + 1 resnorm)
-fitted_param = zeros(x_dim, y_dim, z_dim, 11);
+fitted_param_cplx = zeros(x_dim, y_dim, z_dim, 11);
+fitted_param_mag = zeros(x_dim, y_dim, z_dim, 7);
 
 % optimization parameters
 opts = optimoptions(@lsqnonlin, 'Algorithm', 'trust-region-reflective',...
@@ -50,25 +51,43 @@ tic
 for x = 1:x_dim
     parfor y = 1:y_dim
         for z = 1:z_dim
-            if mask(x,y,z) == 0
+            if Mask(x,y,z) == 0 || R2s(x,y,z) == 0 ...
+                    || isnan(R2s(x,y,z)) || isnan(fs(x,y,z))
                 continue;
             end
             decay = squeeze(data(x,y,z,:)); % squeeze the dimension
             %decay = squeeze(phantom_denoised(x,y,:));
             decay = decay / abs(decay(1));
             
-            % create fitting parameters adaptively for each voxel
-            p0 = [0.2; 0.5; 0.3; 0.01; R2s(x,y,z)+10; R2s(x,y,z)-10; 
+            if any(isnan(decay)) || any(isinf(decay))
+                continue;
+            end
+            
+            % disp(num2str(x)+ " " + num2str(y)+ " " + num2str(z));
+            
+            % create complex fitting parameters adaptively for each voxel
+            p0_cplx = [0.2; 0.5; 0.3; 0.01; 0.064; 0.048; 
                 fs(x,y,z); fs(x,y,z); fs(x,y,z); 0]; % intialization value (unit: seconds)
-            p_lower = [0; 0; 0; 0.003; 0.025; 0.025; 
+            p_lower_cplx = [0; 0; 0; 0.003; 0.025; 0.025; 
                 fs(x,y,z)-75; fs(x,y,z)-25; fs(x,y,z)-25; -pi]; % lower bound
-            p_upper = [2; 2; 2; 0.025; 0.08; 0.08; 
+            p_upper_cplx = [2; 2; 2; 0.025; 0.08; 0.08; 
                 fs(x,y,z)+75; fs(x,y,z)+25; fs(x,y,z)+25; pi]; % upper bound
 
-            % create object function and fit
+            % create objective function (complex model) and fit
             objfcn = @(p)objfun_complex_model(p, echo_time, decay);
-            [p_est, resnorm] = lsqnonlin(objfcn, p0, p_lower, p_upper, opts);
-            fitted_param(x,y,z,:) = reshape([p_est; resnorm], [1,1,11]);
+            [p_est_cplx, resnorm_cplx] = lsqnonlin(objfcn, p0_cplx, p_lower_cplx, p_upper_cplx, opts);
+            fitted_param_cplx(x,y,z,:) = reshape([p_est_cplx; resnorm_cplx], [1,1,11]);
+            
+            
+            % create magnitude fitting parameters adaptively for each voxel
+            p0_mag = [0.2; 0.5; 0.3; 0.01; 0.064; 0.048] % intialization value (unit: seconds)
+            p_lower_mag = [0; 0; 0; 0.003; 0.025; 0.025]; % lower bound
+            p_upper_mag = [0.5; 1; 1; 0.025; 2; 2]; % upper bound
+          
+            % create objective function (magnitude model) and fit
+            objfcn = @(p)objfun_magnitude_model(p, echo_time, abs(decay));
+            [p_est_mag, resnorm_mag] = lsqnonlin(objfcn, p0_mag, p_lower_mag, p_upper_mag, opts);
+            fitted_param_mag(x,y,z,:) = reshape([p_est_mag; resnorm_mag], [1,1,7]);
         end
     end
     waitbar(x/x_dim, f, sprintf('Progress: %d %%', floor(x/x_dim*100)));
@@ -78,9 +97,15 @@ close(f);
 
 
 % extract MWF values
-fitted_mwf = fitted_param(:,:,:,1)./(fitted_param(:,:,:,1)+fitted_param(:,:,:,2)+fitted_param(:,:,:,3));
+fitted_mwf_cplx = fitted_param_cplx(:,:,:,1)./(fitted_param_cplx(:,:,:,1)+fitted_param_cplx(:,:,:,2)+fitted_param_cplx(:,:,:,3));
+fitted_mwf_mag = fitted_param_mag(:,:,:,1)./(fitted_param_mag(:,:,:,1)+fitted_param_mag(:,:,:,2)+fitted_param_mag(:,:,:,3));
 
 % plot MWF maps for experimental data
-figure, subplot(131);imshow(squeeze(fitted_mwf(70,:,:)),[0,0.4],'border','tight'); colorbar;
-subplot(132);imshow(squeeze(fitted_mwf(:,50,:)),[0,0.4],'border','tight'); colorbar;
-subplot(133);imshow(squeeze(fitted_mwf(:,:,60)),[0,0.4],'border','tight'); colorbar;
+figure; suptitle('MWF maps fitted by the complex model (top) and the magnitude model(bottom)');
+subplot(231);imshow(squeeze(fitted_mwf_cplx(70,:,:)),[0,0.4]); colorbar;
+subplot(232);imshow(squeeze(fitted_mwf_cplx(:,50,:)),[0,0.4]); colorbar;
+subplot(233);imshow(squeeze(fitted_mwf_cplx(:,:,60)),[0,0.4]); colorbar;
+subplot(234);imshow(squeeze(fitted_mwf_mag(70,:,:)),[0,0.4]); colorbar;
+subplot(235);imshow(squeeze(fitted_mwf_mag(:,50,:)),[0,0.4]); colorbar;
+subplot(236);imshow(squeeze(fitted_mwf_mag(:,:,60)),[0,0.4]); colorbar;
+
