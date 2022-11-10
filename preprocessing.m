@@ -35,7 +35,8 @@ addpath(genpath(path_to_repo));
 % save parameters.mat voxel_size matrix_size TE delta_TE CF Affine3D B0_dir TR NumEcho Read_offset Phase1_offset Phase2_offset Slice_offset;
 
 % Reconstruct the image with customized bipolar phase correction 
-[iField] = recon_mgre_raw(append(path_to_raw,'/fid'), 256, matrix_size, voxel_size, NumEcho, Read_offset, Phase1_offset, Slice_offset);
+%[iField] = recon_mgre_raw(append(path_to_raw,'/fid'), 256, matrix_size, voxel_size, NumEcho, Read_offset, Phase1_offset, Slice_offset);
+[iField] = recon_mgre_raw(append(path_to_raw,'/fid'), 256, matrix_size, voxel_size, NumEcho, 0, 0, 0);
 
 figure;
 imshow(squeeze(angle(iField(:,50,:))),[-pi,pi]);
@@ -47,17 +48,17 @@ drawnow;
 % iField_mag_denoise = denoise(abs(iField),[5,5,5]);
 % iField = iField_mag_denoise.*exp(1j*angle(iField));
 
-% Gibbs ring removal and denoise via mppca
-iField_mag = permute(abs(iField),[3,1,2,4]); % permute for better unring performance
-iField_mag_unring = iField_mag;
-parfor echo = 1:NumEcho
-    iField_mag_unring(:,:,:,echo) = unring(iField_mag(:,:,:,echo));
-end
-iField_mag_unring = permute(iField_mag_unring,[2,3,1,4]); % permute back to match with original dimension
-
-iField_mag_unring_denoise = denoise(iField_mag_unring,[5,5,5]); % denoise via mppca
-iField = iField_mag_unring_denoise.*exp(1j*angle(iField)); % inplace corrected iField
-clearvars iField_mag iField_mag_unring iField_mag_unring_denoise
+% % Gibbs ring removal and denoise via mppca
+% iField_mag = permute(abs(iField),[3,1,2,4]); % permute for better unring performance
+% iField_mag_unring = iField_mag;
+% parfor echo = 1:NumEcho
+%     iField_mag_unring(:,:,:,echo) = unring(iField_mag(:,:,:,echo));
+% end
+% iField_mag_unring = permute(iField_mag_unring,[2,3,1,4]); % permute back to match with original dimension
+% 
+% iField_mag_unring_denoise = denoise(iField_mag_unring,[5,5,5]); % denoise via mppca
+% iField = iField_mag_unring_denoise.*exp(1j*angle(iField)); % inplace corrected iField
+% clearvars iField_mag iField_mag_unring iField_mag_unring_denoise
 
 
 % Compute magnitude image combining all echoes

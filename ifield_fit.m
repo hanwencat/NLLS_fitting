@@ -65,18 +65,18 @@ for x = 1:x_dim
             
             % disp(num2str(x)+ " " + num2str(y)+ " " + num2str(z));
             
-            % create complex fitting parameters adaptively for each voxel
-            p0_cplx = [0.2; 0.5; 0.3; 0.01; 0.064; 0.048; 
-                fs(x,y,z); fs(x,y,z); fs(x,y,z); 0]; % intialization value (unit: seconds)
-            p_lower_cplx = [0; 0; 0; 0.003; 0.025; 0.025; 
-                fs(x,y,z)-75; fs(x,y,z)-25; fs(x,y,z)-25; -pi]; % lower bound
-            p_upper_cplx = [2; 2; 2; 0.025; 0.08; 0.08; 
-                fs(x,y,z)+75; fs(x,y,z)+25; fs(x,y,z)+25; pi]; % upper bound
-
-            % create objective function (complex model) and fit
-            objfcn = @(p)objfun_complex_model(p, echo_time, decay);
-            [p_est_cplx, resnorm_cplx] = lsqnonlin(objfcn, p0_cplx, p_lower_cplx, p_upper_cplx, opts);
-            fitted_param_cplx(x,y,z,:) = reshape([p_est_cplx; resnorm_cplx], [1,1,11]);
+%             % create complex fitting parameters adaptively for each voxel
+%             p0_cplx = [0.2; 0.5; 0.3; 0.01; 0.064; 0.048; 
+%                 fs(x,y,z); fs(x,y,z); fs(x,y,z); 0]; % intialization value (unit: seconds)
+%             p_lower_cplx = [0; 0; 0; 0.003; 0.025; 0.025; 
+%                 fs(x,y,z)-75; fs(x,y,z)-25; fs(x,y,z)-25; -pi]; % lower bound
+%             p_upper_cplx = [2; 2; 2; 0.025; 0.08; 0.08; 
+%                 fs(x,y,z)+75; fs(x,y,z)+25; fs(x,y,z)+25; pi]; % upper bound
+% 
+%             % create objective function (complex model) and fit
+%             objfcn = @(p)objfun_complex_model(p, echo_time, decay);
+%             [p_est_cplx, resnorm_cplx] = lsqnonlin(objfcn, p0_cplx, p_lower_cplx, p_upper_cplx, opts);
+%             fitted_param_cplx(x,y,z,:) = reshape([p_est_cplx; resnorm_cplx], [1,1,11]);
             
             
             % create magnitude fitting parameters adaptively for each voxel
